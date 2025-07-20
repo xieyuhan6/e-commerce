@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Are you sure?{% endblock %}
+
+{% block content %}
+<h2>Your order has been placed. Below are the details</h2>
+<h3>Order ID: {{ order.id }}</h3>
+<ul>
+    {%for item in order.items.all %}
+    <li>{{ item.quantity }} - {{ item.product.name }} - ${{ item.product.price }}</li>
+    {%endfor%}
+</ul>
+<p>Total: ${{ order.total }}</p>
+
+{%endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}My order{% endblock %}
+
+{% block content %}
+<div class="shadow-md p-4">
+    <h1 class="text-3xl font-bold mb-4">Create Order</h1>
+    <p class="text-gray-600 mb-4">Please fill in the form below to create a new order.</p>
+    <form method="POST">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button class="bg-indigo-600 text-white px-4 py-2 rounded mt-0.5 cursor-pointer" type="submit">Process</button>
+    </form>
+</div>
+
+<style>
+    form p{
+        margin-bottom: 1rem;
+    }
+</style>
+
+{% endblock %}

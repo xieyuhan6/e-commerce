@@ -1,0 +1,34 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{% block title %}xiebaowangshop{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% tailwind_css %}
+    <header class="shadow-md">
+    {% include "includes/nav.html" %}
+    </header>
+  </head>
+
+  <body class="bg-gray-50 font-serif leading-normal tracking-normal flex flex-col min-h-screen w-full h-full ">
+    <main class="container mx-auto py-8 flex-grow">
+      {% block content %}
+        <div class="max-w-6xl mx-auto">
+          <section class="flex flex-col items-center justify-center h-screen space-y-6">
+            <h1 class="text-5xl font-bold">Welcome to xiebaoshop</h1>
+            <a href="{% url 'products:product_list' %}" 
+               class="px-6 py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
+              See what we have!
+            </a>
+          </section>
+        </div>
+      {% endblock %}
+    </main>
+    <footer class="mt-8 border-t border-dashed border-gray-300 py-4 text-center text-sm text-gray-500">
+      &copy; 2025 xiebaowangshop. All rights reserved.
+    </footer>
+  </body>
+</html>
+

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}{{cart.name}}{% endblock %}
+
+
+{% block content %}
+<h2 class="text-2xl font-semibold mb-4">My Cart</h2>
+{% if cart%}
+    <ul class="space-y-2" ">
+        {% for item in cart.items.all %}
+        <li class="flex items-center p-4" id="cart-item-{{ item.product.id }}">
+            {%if item.product.image %}
+            <a href="{% url 'products:product_detail' item.product.id item.product.slug %}">
+                <img src="{{item.product.image.url}}" alt="{{item.product.name}}" class="w-16 h-16">
+            </a>    
+            {%endif%}
+            <div class="flex-grow ml-4 space-y-2"  ">
+            <h3 class="text-lg font-semibold">{{item.product.name}}</h3>
+            <p class="text-gray-600">${{item.product.price}}</p>
+            <p class="text-gray-600" id="quantity-{{item.product.id}}">Quantity:{{item.quantity}}</p>
+            <div class="flex-shrink">
+                    <form class="delete-form" data-item-id="{{ item.product.id }}" action="{% url 'cart:cart_remove' item.product.id%}" method="POST" id="delete-form-{{ item.product.id }}">
+                        {% csrf_token %}
+                        <button id="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded cursor-pointer">Delete</button>
+                        <p id="message-{{item.product.id}}"></p>
+                    </form>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+        <p id="total-price"><strong>Total: ${{cart.get_total_price}}</strong></p>
+            <form action="{% url 'orders:order_create'%}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer">Checkout</button>
+            </form>
+    </ul>
+{% endif %}
+
+<script>
+    document.querySelectorAll(".delete-form").forEach(form=>{
+    form.addEventListener("submit", function(event) {
+        event.preventDefault();
+        const itemId = this.dataset.itemId;
+        const formUrl = this.action;    
+        const formData = new FormData(this);
+        fetch(formUrl, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`message-${itemId}`).innerHTML = "Item deleted successfully.";
+                const nowText = document.getElementById(`quantity-${itemId}`).innerText
+                const nowQuantity=parseInt(nowText.split(":")[1].trim())
+                if(nowQuantity>1){
+                    const newQuantity=nowQuantity-1
+                    document.getElementById(`quantity-${itemId}`).innerText = `Quantity:${newQuantity}`;
+                    } else {
+                        document.getElementById(`cart-item-${itemId}`).innerHTML = "";
+                            }
+                            document.getElementById('total-price').innerHTML = `<strong>Total: $${data.total_price}</strong>`
+                            if (data.total_price===0)
+                                document.getElementById("total-price").innerHTML="Your cart is empty."
+                    }else{
+                        document.getElementById(`message-${itemId}`).innerHTML = "Failed to delete item.";
+                    }
+                    })
+        .catch(error => {
+            console.error(error);
+        });
+    })})
+</script>
+{% endblock %}
